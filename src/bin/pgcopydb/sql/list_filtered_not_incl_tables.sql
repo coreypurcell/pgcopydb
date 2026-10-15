@@ -18,8 +18,8 @@ SELECT c.oid,
        c.relkind AS relkind,
        pg_am.amname,
        c.relpages, c.reltuples::bigint,
-       c.relpages * current_setting('block_size')::bigint AS bytesestimate,
-       pg_size_pretty(c.relpages * current_setting('block_size')::bigint),
+       (c.relpages + coalesce(toast.relpages, 0)) * current_setting('block_size')::bigint AS bytesestimate,
+       pg_size_pretty((c.relpages + coalesce(toast.relpages, 0)) * current_setting('block_size')::bigint),
        false AS excludedata,
        format('%s %s %s',
               regexp_replace(n.nspname, '[\n\r]', ' '),
@@ -32,6 +32,7 @@ SELECT c.oid,
   FROM pg_catalog.pg_class c
   JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid
   LEFT JOIN pg_catalog.pg_am ON c.relam = pg_am.oid
+  LEFT JOIN pg_catalog.pg_class toast ON toast.oid = c.reltoastrelid
   JOIN pg_roles auth ON auth.oid = c.relowner,
        filters f
 

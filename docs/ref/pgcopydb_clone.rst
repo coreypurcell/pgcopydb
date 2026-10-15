@@ -506,6 +506,11 @@ The following options are available to ``pgcopydb clone``:
    pages for each relation. Later, we use the number of pages, and the size for
    each page to estimate the actual size of the tables.
 
+   The size of a table includes the pages of its TOAST relation, so a table
+   with a small heap and a large TOAST relation is split like any other large
+   table. Plain ANALYZE does not update TOAST statistics, run VACUUM to
+   refresh them.
+
    If you wish to run the ANALYZE command manually before running pgcopydb, you
    can use the ``--skip-analyze`` option. This way, you can decrease the time
    spent on the migration.
@@ -881,6 +886,11 @@ PGCOPYDB_ESTIMATE_TABLE_SIZES
    command on the source database that updates the statistics for the number of
    pages for each relation. Later, we use the number of pages, and the size for
    each page to estimate the actual size of the tables.
+
+   The size of a table includes the pages of its TOAST relation, so a table
+   with a small heap and a large TOAST relation is split like any other large
+   table. Plain ANALYZE does not update TOAST statistics, run VACUUM to
+   refresh them.
 
    If you wish to run the ANALYZE command manually before running pgcopydb, you
    can use the ``--skip-analyze`` option or `PGCOPYDB_SKIP_ANALYZE` environment
